@@ -55,7 +55,7 @@ print(listeResto)
 
 
 for i in range(2,int(dernierNum)+1,1):
-    html = urlopen("https://www.linternaute.com/%22+resteLien+str(i))
+    html = urlopen("https://www.linternaute.com/"+resteLien+str(i))
     html_soup = BeautifulSoup(html, 'html.parser')
     rows = html_soup.findAll("h2")
     listeR=[]
