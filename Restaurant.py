@@ -11,14 +11,15 @@ from bs4 import BeautifulSoup
 import pandas as pd
 "------------------------------------------------------------------------------"
 
+"============================================================================="
 # On regarde la page 1
+"============================================================================="
 
 html = urlopen("https://www.linternaute.com/restaurant/guide/dept-haute-savoie/")
 html_soup = BeautifulSoup(html, 'html.parser')
 # On recupère tous les titres (les noms des restaurants et le lien) 
 
-# On s'occupe d'abord des noms des restaurants
-
+listeLienResto=[]
 rows = html_soup.findAll("h2")
 nbResto=len(rows)
 
@@ -26,14 +27,15 @@ print("Nom des restos :")
 listeResto=[]
 for i in rows:
     for j in i:
-        link= j.get("href")
-        print(link)
+        listeLienResto.append(j.get("href"))
         for a in j:
             listeResto.append(a)
-print(listeResto)
 print("")
 
-# Ensuite on recupere le lien des restaurants
+"============================================================================="
+# Ensuite on recupere le lien des autres pages ainsi que le numero
+# de la derniere page
+"============================================================================="
 
 pages= html_soup.findAll("a",{"class":"JpaginatorLink"},"href")
 liste_lien=[]
@@ -56,36 +58,54 @@ for i in leLien:
 
 print("Derniere page : "+dernierNum)
     
-    
-# On refait la meme chose pour toutes les pages 
+"============================================================================="
+# On refait la premiere etape pour toutes les pages 
+"============================================================================="
    
 for i in range(2,int(dernierNum)+1,1):
     html = urlopen("https://www.linternaute.com"+resteLien+str(i))
     html_soup = BeautifulSoup(html, 'html.parser')
     rows = html_soup.findAll("h2")
-    listeR=[]
     
     #print("\n Nom des restos : \n")
     c=[]
     nbResto=nbResto+len(rows)
     for i in rows:
         for j in i:
-            link= j.get("href")
-            print(link)
+            listeLienResto.append(j.get("href"))
+            
             for a in j:
-                listeR.append(a)
-    #print(listeR)
-
-
-#lienResto=html_soup.findAll("a",{"class":"bu_restaurant_title_2"},"href")
-#listeLienResto=[]
-#print("jshfjhfkjdshkj",lienResto)
-for lien in lienResto:
-    print(lien)
-    #link= lien.get("href")
-    #print("a = ",link)
-    #listeLienResto.append(link)
+                listeResto.append(a)
+#print(listeResto)
 
 #print('liste = ',listeLienResto)
 
 print("Il y a "+str(nbResto)+" restaurants")
+
+
+"============================================================================="
+# Fichier CSV
+"============================================================================="
+
+entetes = [
+     u'Nom',
+     u'Lien',
+     u'Telephone',
+     u'Adresse',
+     u'Menu'
+]
+
+print(len(listeResto))
+
+with open('databaseResto.csv', 'w',encoding="utf-8") as f:
+    ligneEntete = ";".join(entetes) + "\n"
+    f.write(ligneEntete)
+    i=0
+    for i in range(0,len(listeResto)):
+        nom=str(listeResto[i])
+        #lien=str(listeLienResto[i])
+        valeurs = [u''+nom]
+        ligne = ";".join(valeurs) + "\n"
+        f.write(ligne)
+
+    f.close()
