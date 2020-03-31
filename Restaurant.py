@@ -5,15 +5,15 @@ Created on Mon Mar 16 08:32:44 2020
 @author: elsar
 """
 " IMPORTATION  "
-"------------------------------------------------------------------------------"
+#------------------------------------------------------------------------------
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import pandas as pd
-"------------------------------------------------------------------------------"
+#------------------------------------------------------------------------------
 
-"============================================================================="
+"""========================================================================="""
 # On regarde la page 1
-"============================================================================="
+"""========================================================================="""
 
 html = urlopen("https://www.linternaute.com/restaurant/guide/dept-haute-savoie/")
 html_soup = BeautifulSoup(html, 'html.parser')
@@ -23,19 +23,40 @@ listeLienResto=[]
 rows = html_soup.findAll("h2")
 nbResto=len(rows)
 
+data=[]
 print("Nom des restos :")
 listeResto=[]
 for i in rows:
     for j in i:
-        listeLienResto.append(j.get("href"))
-        for a in j:
-            listeResto.append(a)
+        listeDonnees=[]
+        print("coucou")
+        for nom in j:
+            listeDonnees.append(nom)
+        listeDonnees.append(j.get("href"))
+        html_resto = urlopen("https://www.linternaute.com/"+j.get("href"))
+        html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
+        rue_rows=html_resto_soup.findAll("span",{"itemprop":"streetAddress"})
+        postal_rows=html_resto_soup.findAll("span",{"itemprop":"postalCode"})
+        ville_rows=html_resto_soup.findAll("span",{"itemprop":"addressLocality"})
+        for i in rue_rows :
+            for j in i:
+                rue=j
+                listeDonnees.append(j)
+        for i in ville_rows:
+            for j in i:
+                ville=j
+                listeDonnees.append(j)
+        for i in postal_rows:
+            for j in i:
+                code=j
+                listeDonnees.append(j)
+        data.append(listeDonnees)
 print("")
 
-"============================================================================="
+"""========================================================================="""
 # Ensuite on recupere le lien des autres pages ainsi que le numero
 # de la derniere page
-"============================================================================="
+"""========================================================================="""
 
 pages= html_soup.findAll("a",{"class":"JpaginatorLink"},"href")
 liste_lien=[]
@@ -58,54 +79,85 @@ for i in leLien:
 
 print("Derniere page : "+dernierNum)
     
-"============================================================================="
+"""========================================================================="""
 # On refait la premiere etape pour toutes les pages 
-"============================================================================="
+"""========================================================================="""
    
 for i in range(2,int(dernierNum)+1,1):
     html = urlopen("https://www.linternaute.com"+resteLien+str(i))
     html_soup = BeautifulSoup(html, 'html.parser')
     rows = html_soup.findAll("h2")
-    
-    #print("\n Nom des restos : \n")
-    c=[]
     nbResto=nbResto+len(rows)
+    po=5
     for i in rows:
+        po=po+1
+        print(i)
+        print("oh")
+        listeDonnees=[]
         for j in i:
             listeLienResto.append(j.get("href"))
-            
-            for a in j:
-                listeResto.append(a)
+            listeDonnees=[]
+            for nom in j:
+                listeDonnees.append(nom)
+            listeDonnees.append(j.get("href"))
+            html_resto = urlopen("https://www.linternaute.com/"+j.get("href"))
+            html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
+            rue_rows=html_resto_soup.findAll("span",{"itemprop":"streetAddress"})
+            postal_rows=html_resto_soup.findAll("span",{"itemprop":"postalCode"})
+            ville_rows=html_resto_soup.findAll("span",{"itemprop":"addressLocality"})
+            for i in rue_rows :
+                for j in i:
+                    rue=j
+                    listeDonnees.append(j)
+            for i in ville_rows:
+                for j in i:
+                    ville=j
+                    listeDonnees.append(j)
+            for i in postal_rows:
+                for j in i:
+                    code=j
+                    listeDonnees.append(j)
+            data.append(listeDonnees)
 #print(listeResto)
 
 #print('liste = ',listeLienResto)
 
-print("Il y a "+str(nbResto)+" restaurants")
+# print("Il y a "+str(nbResto)+" restaurants")
+
+# html_resto = urlopen("https://www.linternaute.com/restaurant/restaurant/166592/chez-baud.shtml")
+# html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
+# rows=html_resto_soup.findAll("span",{"itemprop":"streetAddress"})
+
+# adresse=""
+# for i in rows :
+#     #print(i)
+#     for j in i:
+#         print(j)
 
 
-"============================================================================="
+"""========================================================================="""
 # Fichier CSV
-"============================================================================="
+"""========================================================================="""
 
 entetes = [
      u'Nom',
      u'Lien',
      u'Telephone',
-     u'Adresse',
+     u'Numero de rue',
+     u'rue',
+     u'Ville',
+     u'Code Postal',
      u'Menu'
 ]
 
-print(len(listeResto))
+print(data)
 
 with open('databaseResto.csv', 'w',encoding="utf-8") as f:
     ligneEntete = ";".join(entetes) + "\n"
     f.write(ligneEntete)
     i=0
-    for i in range(0,len(listeResto)):
-        nom=str(listeResto[i])
-        #lien=str(listeLienResto[i])
-        valeurs = [u''+nom]
-        ligne = ";".join(valeurs) + "\n"
+    for i in data:
+        ligne = ";".join(i) + "\n"
         f.write(ligne)
 
     f.close()
