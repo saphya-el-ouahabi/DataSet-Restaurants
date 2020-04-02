@@ -29,7 +29,7 @@ listeResto=[]
 for i in rows:
     for j in i:
         listeDonnees=[]
-        print("coucou")
+        #print("coucou")
         for nom in j:
             listeDonnees.append(nom)
         listeDonnees.append(j.get("href"))
@@ -50,6 +50,7 @@ for i in rows:
             for j in i:
                 code=j
                 listeDonnees.append(j)
+    
         data.append(listeDonnees)
 print("")
 
@@ -91,8 +92,8 @@ for i in range(2,int(dernierNum)+1,1):
     po=5
     for i in rows:
         po=po+1
-        print(i)
-        print("oh")
+        #print(i)
+        #print("oh")
         listeDonnees=[]
         for j in i:
             listeLienResto.append(j.get("href"))
@@ -150,6 +151,12 @@ entetes = [
      u'Menu'
 ]
 
+'''On veut supprimer les \n qui se trouve dans les differentes listes de donnees'''
+#on parcourt les listes contenues dans data
+for d in data:
+    #on parcourt chaque element de chaque liste et strip() permet d'enlever les \n
+    for i in range(0,len(d),1):
+        d[i]=d[i].strip()
 print(data)
 
 with open('databaseResto.csv', 'w',encoding="utf-8") as f:
