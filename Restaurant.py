@@ -36,6 +36,8 @@ for i in rows:
         html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
         rue_rows=html_resto_soup.findAll("li",{"class":"icomoon-location"})
         num_rows = html_resto_soup.findAll("li",{"class":"icomoon-phone"})
+        if (len(num_rows) == 0):
+            listeDonnees.append('')
         for i in num_rows:
             for j in i:
                 for k in j:
@@ -104,12 +106,13 @@ for i in range(2,int(dernierNum)+1,1):
             html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
             rue_rows=html_resto_soup.findAll("li",{"class":"icomoon-location"})
             num_rows = html_resto_soup.findAll("li",{"class":"icomoon-phone"})
+            if (len(num_rows) == 0):
+                listeDonnees.append('')
             for i in num_rows:
                 for j in i:
                     for k in j:
                         if(k!='\n'):
                             num=k
-                            
                             listeDonnees.append(num)
             for i in rue_rows :
                 for j in i:
