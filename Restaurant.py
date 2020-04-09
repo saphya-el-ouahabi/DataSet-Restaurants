@@ -29,27 +29,28 @@ listeResto=[]
 for i in rows:
     for j in i:
         listeDonnees=[]
-        #print("coucou")
         for nom in j:
             listeDonnees.append(nom)
         listeDonnees.append(j.get("href"))
         html_resto = urlopen("https://www.linternaute.com/"+j.get("href"))
         html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
-        rue_rows=html_resto_soup.findAll("span",{"itemprop":"streetAddress"})
-        postal_rows=html_resto_soup.findAll("span",{"itemprop":"postalCode"})
-        ville_rows=html_resto_soup.findAll("span",{"itemprop":"addressLocality"})
+        rue_rows=html_resto_soup.findAll("li",{"class":"icomoon-location"})
+        num_rows = html_resto_soup.findAll("li",{"class":"icomoon-phone"})
+        for i in num_rows:
+            for j in i:
+                for k in j:
+                    if(k!='\n'):
+                        num=k
+                        
+                        listeDonnees.append(num)
         for i in rue_rows :
             for j in i:
-                rue=j
-                listeDonnees.append(j)
-        for i in ville_rows:
-            for j in i:
-                ville=j
-                listeDonnees.append(j)
-        for i in postal_rows:
-            for j in i:
-                code=j
-                listeDonnees.append(j)
+                for k in j:
+                    if ((k!='\n') and (k!='') and (k!=',') and (k!=' ') and (k!='|') and (k!='Plan')):
+                        a=k.string
+                        listeDonnees.append(a.strip())
+            
+        
     
         data.append(listeDonnees)
 print("")
@@ -92,8 +93,6 @@ for i in range(2,int(dernierNum)+1,1):
     po=5
     for i in rows:
         po=po+1
-        #print(i)
-        #print("oh")
         listeDonnees=[]
         for j in i:
             listeLienResto.append(j.get("href"))
@@ -103,21 +102,22 @@ for i in range(2,int(dernierNum)+1,1):
             listeDonnees.append(j.get("href"))
             html_resto = urlopen("https://www.linternaute.com/"+j.get("href"))
             html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
-            rue_rows=html_resto_soup.findAll("span",{"itemprop":"streetAddress"})
-            postal_rows=html_resto_soup.findAll("span",{"itemprop":"postalCode"})
-            ville_rows=html_resto_soup.findAll("span",{"itemprop":"addressLocality"})
+            rue_rows=html_resto_soup.findAll("li",{"class":"icomoon-location"})
+            num_rows = html_resto_soup.findAll("li",{"class":"icomoon-phone"})
+            for i in num_rows:
+                for j in i:
+                    for k in j:
+                        if(k!='\n'):
+                            num=k
+                            
+                            listeDonnees.append(num)
             for i in rue_rows :
                 for j in i:
-                    rue=j
-                    listeDonnees.append(j)
-            for i in ville_rows:
-                for j in i:
-                    ville=j
-                    listeDonnees.append(j)
-            for i in postal_rows:
-                for j in i:
-                    code=j
-                    listeDonnees.append(j)
+                    for k in j:
+                        if ((k!='\n') and (k!='') and (k!=',') and (k!=' ') and (k!='|') and (k!='Plan')):
+                            a=k.string
+                            listeDonnees.append(a.strip())
+            
             data.append(listeDonnees)
 #print(listeResto)
 
@@ -125,15 +125,7 @@ for i in range(2,int(dernierNum)+1,1):
 
 # print("Il y a "+str(nbResto)+" restaurants")
 
-# html_resto = urlopen("https://www.linternaute.com/restaurant/restaurant/166592/chez-baud.shtml")
-# html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
-# rows=html_resto_soup.findAll("span",{"itemprop":"streetAddress"})
 
-# adresse=""
-# for i in rows :
-#     #print(i)
-#     for j in i:
-#         print(j)
 
 
 """========================================================================="""
@@ -144,19 +136,14 @@ entetes = [
      u'Nom',
      u'Lien',
      u'Telephone',
-     u'Numero de rue',
      u'rue',
-     u'Ville',
      u'Code Postal',
+     u'Ville',
      u'Menu'
 ]
 
-'''On veut supprimer les \n qui se trouve dans les differentes listes de donnees'''
-#on parcourt les listes contenues dans data
-for d in data:
-    #on parcourt chaque element de chaque liste et strip() permet d'enlever les \n
-    for i in range(0,len(d),1):
-        d[i]=d[i].strip()
+
+   
 print(data)
 
 with open('databaseResto.csv', 'w',encoding="utf-8") as f:
@@ -164,6 +151,8 @@ with open('databaseResto.csv', 'w',encoding="utf-8") as f:
     f.write(ligneEntete)
     i=0
     for i in data:
+        
+        
         ligne = ";".join(i) + "\n"
         f.write(ligne)
 
