@@ -24,38 +24,39 @@ rows = html_soup.findAll("h2")
 nbResto=len(rows)
 
 data=[]
-print("Nom des restos :")
 listeResto=[]
 for i in rows:
     for j in i:
         listeDonnees=[]
+        
+        # Nom du restaurant
         for nom in j:
             listeDonnees.append(nom)
-        listeDonnees.append(j.get("href"))
-        html_resto = urlopen("https://www.linternaute.com/"+j.get("href"))
-        html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
-        rue_rows=html_resto_soup.findAll("li",{"class":"icomoon-location"})
-        num_rows = html_resto_soup.findAll("li",{"class":"icomoon-phone"})
-        if (len(num_rows) == 0):
-            listeDonnees.append('')
-        for i in num_rows:
-            for j in i:
-                for k in j:
-                    if(k!='\n'):
-                        num=k
-                        
-                        listeDonnees.append(num)
-        for i in rue_rows :
-            for j in i:
-                for k in j:
-                    if ((k!='\n') and (k!='') and (k!=',') and (k!=' ') and (k!='|') and (k!='Plan')):
-                        a=k.string
-                        listeDonnees.append(a.strip())
             
+        # Lien du restaurant
+        lienResto="https://www.linternaute.com/"+j.get("href")
+        listeDonnees.append(lienResto)
         
+        html_resto = urlopen(lienResto)
+        html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
+        
+        # Numero du Restaurant
+        listeDonnees.append(html_resto_soup.findAll("li",{"class":"icomoon-phone"})[0].a.get("href"))
+        
+        # Localisation du Restaurant
+        rue_rows=html_resto_soup.findAll("li",{"class":"icomoon-location"})
+        html_adresse=html_resto_soup.findAll("li",{"class":"icomoon-location"})[0]
+        for i in range(0,len(html_adresse.findAll("span"))):
+            for j in (html_adresse.findAll("span")[i]):
+                listeDonnees.append(j.strip())       
+            
+        # Note du restaurant
+        note_rows = html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})
+        for i in html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})[0].span:
+            listeDonnees.append(" "+i+" / 5 ")    
     
         data.append(listeDonnees)
-print("")
+print("premiere page finie")
 
 """========================================================================="""
 # Ensuite on recupere le lien des autres pages ainsi que le numero
@@ -87,7 +88,7 @@ print("Derniere page : "+dernierNum)
 # On refait la premiere etape pour toutes les pages 
 """========================================================================="""
    
-for i in range(2,int(dernierNum)+1,1):
+for i in range(2,3):#int(dernierNum)+1,1):
     html = urlopen("https://www.linternaute.com"+resteLien+str(i))
     html_soup = BeautifulSoup(html, 'html.parser')
     rows = html_soup.findAll("h2")
@@ -99,34 +100,38 @@ for i in range(2,int(dernierNum)+1,1):
         for j in i:
             listeLienResto.append(j.get("href"))
             listeDonnees=[]
+            
+            # Nom du Restaurant
             for nom in j:
                 listeDonnees.append(nom)
-            listeDonnees.append(j.get("href"))
-            html_resto = urlopen("https://www.linternaute.com/"+j.get("href"))
+                
+            # Lien du Restaurant
+            lienResto="https://www.linternaute.com/"+j.get("href")
+            listeDonnees.append(lienResto)
+        
+            html_resto = urlopen(lienResto)
             html_resto_soup = BeautifulSoup(html_resto, 'html.parser')
+            
+            # Numero du Restaurant
+            if len(html_resto_soup.findAll("li",{"class":"icomoon-phone"})) != 0:
+                listeDonnees.append(html_resto_soup.findAll("li",{"class":"icomoon-phone"})[0].a.get("href"))
+            else:
+                listeDonnees.append("")
+            # Localisation du Restaurant
             rue_rows=html_resto_soup.findAll("li",{"class":"icomoon-location"})
-            num_rows = html_resto_soup.findAll("li",{"class":"icomoon-phone"})
-            if (len(num_rows) == 0):
-                listeDonnees.append('')
-            for i in num_rows:
-                for j in i:
-                    for k in j:
-                        if(k!='\n'):
-                            num=k
-                            listeDonnees.append(num)
-            for i in rue_rows :
-                for j in i:
-                    for k in j:
-                        if ((k!='\n') and (k!='') and (k!=',') and (k!=' ') and (k!='|') and (k!='Plan')):
-                            a=k.string
-                            listeDonnees.append(a.strip())
+            html_adresse=html_resto_soup.findAll("li",{"class":"icomoon-location"})[0]
+            for i in range(0,len(html_adresse.findAll("span"))):
+                for j in (html_adresse.findAll("span")[i]):
+                    listeDonnees.append(j.strip()) 
+                
+            # Note du restaurant
+            note_rows = html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})
+            for i in html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})[0].span:
+                listeDonnees.append(" "+i+" / 5 ") 
             
             data.append(listeDonnees)
-#print(listeResto)
 
-#print('liste = ',listeLienResto)
-
-# print("Il y a "+str(nbResto)+" restaurants")
+print("Il y a "+str(nbResto)+" restaurants")
 
 
 
@@ -142,6 +147,9 @@ entetes = [
      u'rue',
      u'Code Postal',
      u'Ville',
+     u'budget',
+     u'note',
+     u'avis',
      u'Menu'
 ]
 
