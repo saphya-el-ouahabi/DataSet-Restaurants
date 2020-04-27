@@ -62,6 +62,13 @@ for i in rows:
         for i in html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})[0].span:
             listeDonnees.append(" "+i+" / 5 ☆")   
         
+        #Avis les plus pertinents
+        liste_avis=[]
+        avis_rows = html_resto_soup.findAll("p",{"itemprop":"description"})
+        for avis in avis_rows :
+            liste_avis.append(avis.text.strip())
+        avis =''.join(str(elem) for elem in liste_avis)
+        listeDonnees.append(avis.strip())
     
         data.append(listeDonnees)
 print("premiere page finie")
@@ -145,6 +152,13 @@ for i in range(2,3):#int(dernierNum)+1,1):
             for i in html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})[0].span:
                 listeDonnees.append(" "+i+" / 5 ☆") 
             
+            #Avis les plus pertinents
+            liste_avis=[]
+            avis_rows = html_resto_soup.findAll("p",{"itemprop":"description"})
+            for avis in avis_rows :
+                liste_avis.append(avis.text.strip())
+            avis =''.join(str(elem) for elem in liste_avis)
+            listeDonnees.append(avis.strip())
             data.append(listeDonnees)
 
 print("Il y a "+str(nbResto)+" restaurants")
