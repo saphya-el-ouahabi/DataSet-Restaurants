@@ -22,7 +22,7 @@ html_soup = BeautifulSoup(html, 'html.parser')
 listeLienResto=[]
 rows = html_soup.findAll("h2")
 nbResto=len(rows)
-
+cpt=0
 data=[]
 listeResto=[]
 for i in rows:
@@ -50,10 +50,18 @@ for i in rows:
             for j in (html_adresse.findAll("span")[i]):
                 listeDonnees.append(j.strip())       
             
+        # Budget du restaurant
+        budget_rows=html_soup.findAll("div",{"class":"grid_col w75 bu_restaurant_details"})[cpt].ul.findAll("a")
+        for budget in budget_rows:
+            if "budget" in budget.get("href"):
+                cpt=cpt+1
+                listeDonnees.append(budget.text.strip())
+                
         # Note du restaurant
         note_rows = html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})
         for i in html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})[0].span:
-            listeDonnees.append(" "+i+" / 5 ")    
+            listeDonnees.append(" "+i+" / 5 ☆")   
+        
     
         data.append(listeDonnees)
 print("premiere page finie")
@@ -94,6 +102,7 @@ for i in range(2,3):#int(dernierNum)+1,1):
     rows = html_soup.findAll("h2")
     nbResto=nbResto+len(rows)
     po=5
+    cpt=0
     for i in rows:
         po=po+1
         listeDonnees=[]
@@ -124,10 +133,17 @@ for i in range(2,3):#int(dernierNum)+1,1):
                 for j in (html_adresse.findAll("span")[i]):
                     listeDonnees.append(j.strip()) 
                 
+            # Budget du restaurant
+            budget_rows=html_soup.findAll("div",{"class":"grid_col w75 bu_restaurant_details"})[cpt].ul.findAll("a")
+            for budget in budget_rows:
+                if "budget" in budget.get("href"):
+                    cpt=cpt+1
+                    listeDonnees.append(budget.text.strip())
+                    
             # Note du restaurant
             note_rows = html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})
             for i in html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})[0].span:
-                listeDonnees.append(" "+i+" / 5 ") 
+                listeDonnees.append(" "+i+" / 5 ☆") 
             
             data.append(listeDonnees)
 
@@ -144,12 +160,12 @@ entetes = [
      u'Nom',
      u'Lien',
      u'Telephone',
-     u'rue',
+     u'Rue',
      u'Code Postal',
      u'Ville',
-     u'budget',
-     u'note',
-     u'avis',
+     u'Budget',
+     u'Note',
+     u'Avis',
      u'Menu'
 ]
 
