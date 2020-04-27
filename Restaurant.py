@@ -62,14 +62,24 @@ for i in rows:
         for i in html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})[0].span:
             listeDonnees.append(" "+i+" / 5 ☆")   
         
-        #Avis les plus pertinents
+        # Date de creation
+        date = html_resto_soup.findAll("section",{"class":"bu_restaurant_section bu_restaurant_section--fixed"})[0].li.text
+        if "Restaurant créé" not in date:
+            listeDonnees.append("NC")
+        else:
+            listeDonnees.append(date)
+        #for date in date_rows :
+            #print(date.text.strip())
+        #listeDonnees.append(date.strip())
+        
+        # Avis les plus pertinents
         liste_avis=[]
         avis_rows = html_resto_soup.findAll("p",{"itemprop":"description"})
         for avis in avis_rows :
             liste_avis.append(avis.text.strip())
         avis =''.join(str(elem) for elem in liste_avis)
         listeDonnees.append(avis.strip())
-    
+        print("cc ",listeDonnees)
         data.append(listeDonnees)
 print("premiere page finie")
 
