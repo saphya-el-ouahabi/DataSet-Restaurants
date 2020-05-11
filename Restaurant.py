@@ -9,6 +9,7 @@ Created on Mon Mar 16 08:32:44 2020
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import pandas as pd
+import re
 #------------------------------------------------------------------------------
 
 """========================================================================="""
@@ -62,24 +63,17 @@ for i in rows:
         for i in html_resto_soup.findAll("span",{"class":"bu_restaurant_grade"})[0].span:
             listeDonnees.append(" "+i+" / 5 ☆")   
         
-        # Date de creation
-        date = html_resto_soup.findAll("section",{"class":"bu_restaurant_section bu_restaurant_section--fixed"})[0].li.text
-        if "Restaurant créé" not in date:
-            listeDonnees.append("NC")
-        else:
-            listeDonnees.append(date)
-        #for date in date_rows :
-            #print(date.text.strip())
-        #listeDonnees.append(date.strip())
-        
-        # Avis les plus pertinents
+        #Avis les plus pertinents
         liste_avis=[]
         avis_rows = html_resto_soup.findAll("p",{"itemprop":"description"})
         for avis in avis_rows :
             liste_avis.append(avis.text.strip())
-        avis =''.join(str(elem) for elem in liste_avis)
-        listeDonnees.append(avis.strip())
-        print("cc ",listeDonnees)
+        a_vis =''.join(str(elem) for elem in liste_avis)
+        regex = re.compile(r'[\n\r\t]')
+        a_vis = regex.sub(" ", a_vis)
+        listeDonnees.append(a_vis)
+        
+    
         data.append(listeDonnees)
 print("premiere page finie")
 
@@ -167,8 +161,10 @@ for i in range(2,3):#int(dernierNum)+1,1):
             avis_rows = html_resto_soup.findAll("p",{"itemprop":"description"})
             for avis in avis_rows :
                 liste_avis.append(avis.text.strip())
-            avis =''.join(str(elem) for elem in liste_avis)
-            listeDonnees.append(avis.strip())
+            a_vis =''.join(str(elem) for elem in liste_avis)
+            regex = re.compile(r'[\n\r\t]')
+            a_vis = regex.sub(" ", a_vis)
+            listeDonnees.append(a_vis)
             data.append(listeDonnees)
 
 print("Il y a "+str(nbResto)+" restaurants")
