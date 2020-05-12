@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Mar 16 08:32:44 2020
 
-@author: elsar
-"""
 " IMPORTATION  "
 #------------------------------------------------------------------------------
 from urllib.request import urlopen
